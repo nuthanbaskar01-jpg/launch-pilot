@@ -1,4 +1,3 @@
-```markdown
 # 🚀 Launch Pilot
 
 > A sleek, high-performance web application built with React and Vite, designed to streamline project launching and pilot monitoring.
