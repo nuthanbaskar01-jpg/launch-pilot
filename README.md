@@ -138,13 +138,3 @@ npm run dev
 ```
 
 ---
-
-## 🔮 Future Improvements
-
-* Multi-project workspaces
-* PDF export
-* Team collaboration
-* Analytics dashboard
-* Project templates
-
----
