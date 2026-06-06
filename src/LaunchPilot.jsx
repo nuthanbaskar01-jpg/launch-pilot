@@ -298,8 +298,51 @@ export default function App() {
   const [view, setView] = useState("setup");
   const [product, setProduct] = useState(null);
   const [artifacts, setArtifacts] = useState({}); // module outputs cache
+
+  useEffect(() => {
+  loadWorkspace();
+}, []);
+
   const [usersAcquired, setUsersAcquired] = useState(0);
   const [live, setLive] = useState({ url: "", status: "off", payload: null, syncedAt: null, error: "" });
+
+  async function loadWorkspace() {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: products } = await supabase
+      .from("products")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (products?.length) {
+      setProduct(products[0]);
+    }
+
+    const { data: gens } = await supabase
+      .from("generations")
+      .select("*")
+      .eq("user_id", user.id);
+
+    if (gens?.length) {
+      const restored = {};
+
+      gens.forEach((g) => {
+        restored[g.type] = g.content;
+      });
+
+      setArtifacts(restored);
+    }
+  } catch (err) {
+    console.error("Workspace load failed:", err);
+  }
+}
 
   useEffect(() => {
     const el = document.createElement("style");
@@ -444,7 +487,31 @@ function SetupView({ product, setProduct, setView }) {
 
         <div className="lp-divider" style={{ margin: "24px 0" }} />
         <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <Btn disabled={!ready} onClick={() => { setProduct(f); setView("intel"); }}>
+          <Btn
+            disabled={!ready}
+            onClick={async () => {
+                const {
+                data: { user },
+                } = await supabase.auth.getUser();
+
+                if (user) {
+                await supabase.from("products").insert([
+                    {
+                    user_id: user.id,
+                    name: f.name,
+                    url: f.url,
+                    description: f.description,
+                    audience: f.audience,
+                    pricing: f.pricing,
+                    stage: f.stage,
+                    },
+                ]);
+                }
+
+                setProduct(f);
+                setView("intel");
+            }}
+            >
             <Rocket size={15} /> Launch mission
           </Btn>
           <Btn variant="ghost" onClick={() => setF(SAMPLE)}><Sparkles size={14} /> Load sample product</Btn>
