@@ -126,9 +126,9 @@ npm install
 Create a `.env.local` file:
 
 ```env
-VITE_SUPABASE_URL=your_url
-VITE_SUPABASE_ANON_KEY=your_key
-GROQ_API_KEY=your_key
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+GROQ_API_KEY=your_groq_api_key
 ```
 
 ### Run Development Server
