@@ -1,9 +1,3 @@
-This is the classic, generic default README that Vite dumps into a new project. Let’s completely throw this out and replace it with a polished, highly professional README specifically for **Launch Pilot**.
-
-Since this is a React + Vite application, reviewers will want to see clear installation steps, an explanation of what Launch Pilot actually solves, and a clean breakdown of features.
-
-Here is a complete, production-ready README. Copy and paste this directly into your `README.md` file:
-
 ```markdown
 # 🚀 Launch Pilot
 
