@@ -1,3 +1,19 @@
+import { supabase } from "./lib/supabase";
+
+// const {
+//   data: { user },
+// } = await supabase.auth.getUser();
+
+// if (user) {
+//   await supabase.from("generations").insert([
+//     {
+//       user_id: user.id,
+//       type: key,
+//       content: out,
+//     },
+//   ]);
+// }
+
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
@@ -20,25 +36,29 @@ import {
 const MODEL = "claude-sonnet-4-20250514";
 
 /* ---------- Claude generation engine ---------- */
-async function callClaude(system, user, { maxTokens = 4000, json = false } = {}) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+async function callGemini(system, user, { json = false } = {}) {
+  const prompt = `${system}\n\n${user}`;
+
+  const res = await fetch("/api/generate", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      system,
-      messages: [{ role: "user", content: user }],
+      prompt,
     }),
   });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+
+  if (!res.ok) {
+    throw new Error(`API ${res.status}`);
+  }
+
   const data = await res.json();
-  const text = (data.content || [])
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("\n")
-    .trim();
+
+  const text = data.content;
+
   if (!json) return text;
+
   return parseJson(text);
 }
 
@@ -291,7 +311,7 @@ export default function App() {
   const setArt = (key, val) => setArtifacts((a) => ({ ...a, [key]: val }));
 
   const ctx = { product, setProduct, artifacts, setArt, usersAcquired, setUsersAcquired, setView, live, setLive };
-  const locked = !product;
+  const locked = false;
 
   return (
     <div className="lp-root lp-grain" style={{ display: "flex", position: "relative", zIndex: 2 }}>
@@ -331,7 +351,7 @@ export default function App() {
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex: 1, height: "100vh", overflowY: "auto", padding: "30px 40px 80px", maxWidth: 1180 }}>
+      <main style={{ flex: 1, height: "100vh", overflowY: "auto", padding: "30px 40px 80px", maxWidth: 1800 }}>
         {view === "setup" && <SetupView {...ctx} />}
         {view === "dashboard" && (product ? <DashboardView {...ctx} /> : <NeedSetup setView={setView} />)}
         {view === "intel" && (product ? <IntelView {...ctx} /> : <NeedSetup setView={setView} />)}
@@ -457,12 +477,36 @@ function useGen(key, ctx, runner) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const data = artifacts[key];
+
   const run = async () => {
-    setBusy(true); setErr("");
-    try { const out = await runner(product); setArt(key, out); }
-    catch (e) { setErr("Generation failed — " + (e.message || "try again.") + " (The in-artifact Claude API must be available.)"); }
-    finally { setBusy(false); }
+    setBusy(true);
+    setErr("");
+
+    try {
+      const out = await runner(product);
+
+      setArt(key, out);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        await supabase.from("generations").insert([
+          {
+            user_id: user.id,
+            type: key,
+            content: out,
+          },
+        ]);
+      }
+    } catch (e) {
+      setErr("Generation failed — " + (e.message || "try again."));
+    } finally {
+      setBusy(false);
+    }
   };
+
   return { busy, err, data, run };
 }
 
@@ -470,7 +514,7 @@ function useGen(key, ctx, runner) {
    2 — PRODUCT INTELLIGENCE
    ============================================================ */
 function IntelView(ctx) {
-  const g = useGen("intel", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("intel", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Produce a Product Intelligence Profile. Return ONLY valid JSON:
@@ -567,7 +611,7 @@ function IntelOut({ d }) {
    ============================================================ */
 const CH_ICON = { reddit: Hash, subreddit: Hash, linkedin: Users, slack: MessageCircle, discord: MessageCircle, forum: MessageCircle, newsletter: Mail, influencer: Megaphone, twitter: Hash, community: Users };
 function AudienceView(ctx) {
-  const g = useGen("audience", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("audience", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Identify the specific places this product's first 10 users already gather. Return ONLY valid JSON:
@@ -637,7 +681,7 @@ function scoreColor(s) { return s >= 80 ? "var(--green)" : s >= 60 ? "var(--ambe
    4 — MESSAGE DISCOVERY (incl. 50 hooks)
    ============================================================ */
 function MessageView(ctx) {
-  const g = useGen("message", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("message", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Generate the core messaging system. Return ONLY valid JSON:
@@ -735,7 +779,7 @@ function ContentView(ctx) {
     setBusy(true); setErr("");
     try {
       const t = CONTENT_TYPES.find((c) => c.id === type).label;
-      const text = await callClaude(BASE_SYSTEM,
+      const text = await callGemini(BASE_SYSTEM,
         `${productContext(product)}
 
 Write a ready-to-publish ${t} for this product, tailored to the platform's native format and norms.
@@ -801,7 +845,7 @@ const ANGLES = [
   { id: "casestudy", label: "Case Study", color: "var(--violet)" },
 ];
 function IdeasView(ctx) {
-  const g = useGen("ideas", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("ideas", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Generate 100 content ideas (titles/angles) for this product — 20 each across these 5 angles:
@@ -870,7 +914,7 @@ function VideoView(ctx) {
   const gen = async () => {
     setBusy(true); setErr("");
     try {
-      const d = await callClaude(BASE_SYSTEM,
+      const d = await callGemini(BASE_SYSTEM,
         `${productContext(product)}
 
 Produce a complete, production-ready video asset package for a "${vtype}" promoting this product.
@@ -1005,7 +1049,7 @@ function VideoOut({ d }) {
 function PlaybookView(ctx) {
   const { setUsersAcquired, usersAcquired } = ctx;
   const [done, setDone] = useState({});
-  const g = useGen("playbook", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("playbook", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Build a day-by-day execution playbook to acquire the FIRST 10 ACTIVATED users. Return ONLY valid JSON:
@@ -1113,7 +1157,7 @@ function AgentView(ctx) {
     setBusy(true); setErr("");
     try {
       const t = OUTREACH_TYPES.find((o) => o.id === otype).label;
-      const d = await callClaude(BASE_SYSTEM,
+      const d = await callGemini(BASE_SYSTEM,
         `${productContext(product)}
 
 Write 3 variants of a "${t}" message to help acquire early users. Return ONLY valid JSON:
@@ -1165,7 +1209,7 @@ Rules: personalized feel, value-first, soft ask, no spam. Reference the real pro
    10 — DISTRIBUTION ENGINE
    ============================================================ */
 function DistroView(ctx) {
-  const g = useGen("distro", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("distro", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Build a distribution plan: for each content asset type, recommend where to post, best timing, audience fit and a realistic expected reach for a pre-traction founder. Return ONLY valid JSON:
@@ -1215,7 +1259,7 @@ Return 8-10 rows, sorted by priority. Be realistic about reach for someone with 
    11 — GROWTH EXPERIMENTS
    ============================================================ */
 function ExperimentsView(ctx) {
-  const g = useGen("experiments", ctx, async (p) => callClaude(BASE_SYSTEM,
+  const g = useGen("experiments", ctx, async (p) => callGemini(BASE_SYSTEM,
     `${productContext(p)}
 
 Design 5 growth experiments to run this week toward the first 10 users. Return ONLY valid JSON:
