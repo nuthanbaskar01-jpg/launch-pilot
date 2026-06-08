@@ -4,7 +4,7 @@ AI-powered go-to-market platform that helps founders validate ideas, identify ta
 
 ## 🌐 Live Demo
 
-URL: (vercel)
+URL: https://launch-pilot1.vercel.app/
 ---
 
 ## ✨ Features
