@@ -550,13 +550,17 @@ export default function App() {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .limit(1);
 
     if (products?.length) {
       setProduct(products[0]);
     }
 
     setProjects(products || []);
+
+    setAnalytics((a) => ({
+        ...a,
+        projectCount: products?.length || 0,
+      }));
 
     if (products?.length) {
     setCurrentProjectId(products[0].id);
@@ -567,6 +571,27 @@ export default function App() {
       .select("*")
       .eq("user_id", user.id);
 
+      if (gens?.length) {
+  const counts = {};
+
+  gens.forEach((g) => {
+    counts[g.type] = (counts[g.type] || 0) + 1;
+  });
+
+  const mostUsed = Object.keys(counts).reduce((a, b) =>
+    counts[a] > counts[b] ? a : b
+  );
+
+  const lastGen = gens[gens.length - 1];
+
+  setAnalytics((prev) => ({
+    ...prev,
+    generationCount: gens.length,
+    mostUsed,
+    lastGenerated: lastGen.type,
+  }));
+}
+
     if (gens?.length) {
         const restored = {};
 
@@ -576,6 +601,25 @@ export default function App() {
 
         setArtifacts(restored);
         }
+        if (gens?.length) {
+  const counts = {};
+
+  gens.forEach((g) => {
+    counts[g.type] = (counts[g.type] || 0) + 1;
+  });
+
+  const mostUsed = Object.keys(counts).reduce((a, b) =>
+    counts[a] > counts[b] ? a : b
+  );
+
+  const lastGen = gens[gens.length - 1];
+
+setAnalytics((prev) => ({
+  ...prev,
+  mostUsed,
+  lastGenerated: lastGen.type,
+}));
+}
         setLoading(false);
   } catch (err) {
     console.error("Workspace load failed:", err);
