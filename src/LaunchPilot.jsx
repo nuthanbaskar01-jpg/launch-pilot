@@ -999,7 +999,9 @@ function SetupView({ product, setProduct, setView }) {
                 setF(random);
             }}
             >
-              <Btn
+            <Sparkles size={14} /> Load sample product
+            </Btn>
+            <Btn
   variant="ghost"
   onClick={() => {
     setProduct(null);
@@ -1016,8 +1018,6 @@ function SetupView({ product, setProduct, setView }) {
 >
   New Project
 </Btn>
-            <Sparkles size={14} /> Load sample product
-            </Btn>
           {!ready && <span style={{ fontSize: 12.5, color: "var(--muted2)" }}>Name, description & audience required.</span>}
         </div>
       </Panel>
