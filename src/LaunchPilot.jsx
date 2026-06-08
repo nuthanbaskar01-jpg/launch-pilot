@@ -98,65 +98,192 @@ const BASE_SYSTEM =
    DESIGN SYSTEM (injected stylesheet) — flight-deck aesthetic
    ============================================================ */
 const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-:root{
-  --ink:#0a0c10; --ink2:#0f131a; --panel:#12171f; --panel2:#161c26;
-  --line:#222b38; --line2:#2c3848;
-  --txt:#e8edf4; --txt2:#9ba6b4; --muted:#7b8794; --muted2:#586474;
-  --amber:#ff7a18; --amber2:#ffae5c; --amber-dim:#3a2410;
-  --cyan:#3fe0d0; --cyan-dim:#0e2b2a;
-  --green:#5be584; --red:#ff5d5d; --violet:#a78bfa;
-  --r:14px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --ink:#080b10; --ink2:#0d1117; --panel:#111620; --panel2:#141a26;
+  --line:#1e2736; --line2:#243044; --line3:#2d3a50;
+  --txt:#e6ecf5; --txt2:#8fa0b8; --muted:#6a7d95; --muted2:#4d5f75;
+  --amber:#f97316; --amber2:#fb923c; --amber3:#fed7aa; --amber-bg:#1c1008;
+  --cyan:#22d3ee; --cyan-bg:#041f2a;
+  --green:#4ade80; --red:#f87171; --violet:#a78bfa;
+  --r-sm:8px; --r:12px; --r-lg:16px;
+  --sidebar:240px;
+  --font:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(0.16,1,0.3,1);
 }
+
 *{box-sizing:border-box}
-.lp-root{font-family:'Hanken Grotesk',sans-serif;color:var(--txt);background:
-  radial-gradient(1200px 600px at 80% -10%, rgba(255,122,24,.08), transparent 60%),
-  radial-gradient(900px 500px at -10% 110%, rgba(63,224,208,.06), transparent 55%),
-  var(--ink);
-  min-height:100vh;-webkit-font-smoothing:antialiased;}
+.lp-root {
+  font-family: 'Inter', sans-serif;
+  color: var(--txt);
+
+  background:
+  linear-gradient(
+  to bottom,
+  #080b10,
+  #0d1117
+  );
+
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.lp-root::before{
+  content:'';
+  position:fixed;
+  inset:0;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.03) 1px,
+      transparent 1px
+    );
+
+  background-size:40px 40px;
+
+  pointer-events:none;
+}
+
 .lp-mono{font-family:'JetBrains Mono',monospace}
-.lp-display{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.lp-display{font-family:'Inter',sans-serif;letter-spacing:-.02em}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:20px;border:2px solid var(--ink)}
-
-.lp-grain:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.04;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-
 /* sidebar */
-.lp-side{background:linear-gradient(180deg,var(--ink2),var(--ink));border-right:1px solid var(--line);}
-.lp-navbtn{display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border-radius:10px;
-  color:var(--muted);font-size:13.5px;font-weight:500;background:transparent;border:1px solid transparent;
-  cursor:pointer;transition:all .15s;text-align:left}
-.lp-navbtn:hover{color:var(--txt);background:var(--panel)}
-.lp-navbtn.on{color:var(--txt);background:var(--panel2);border-color:var(--line2)}
-.lp-navbtn.on .lp-ic{color:var(--amber)}
-.lp-ic{color:var(--muted2);flex-shrink:0;transition:color .15s}
-.lp-navbtn.locked{opacity:.4;cursor:not-allowed}
+.lp-side {
+  width: var(--sidebar);
+  flex-shrink: 0;
+  background: var(--ink2);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+  .lp-navbtn {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; padding: 8px 10px; border-radius: 8px;
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  background: transparent; border: none; cursor: pointer;
+  transition: color .15s, background .15s;
+  text-align: left; position: relative;
+  font-family: var(--font);
+}
+.lp-navbtn:hover { color: var(--txt2); background: var(--panel); }
+
+.lp-navbtn.on {
+  color: var(--txt);
+  background: var(--panel2);
+  border: none;
+}
+
+.lp-navbtn.on::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--amber);
+  border-radius: 0 3px 3px 0;
+}
+
+.lp-navbtn.on .lp-ic {
+  color: var(--amber);
+}
 
 /* panels */
-.lp-panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
-  border-radius:var(--r);}
-.lp-panel-glow{box-shadow:0 0 0 1px rgba(255,122,24,.0),0 24px 60px -30px rgba(0,0,0,.8)}
-.lp-card{background:var(--ink2);border:1px solid var(--line);border-radius:12px;transition:border-color .18s,transform .18s}
-.lp-card:hover{border-color:var(--line2)}
+.lp-card {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: border-color .18s;
+}
+.lp-card {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: border-color .18s;
+}
+.lp-card:hover { border-color: var(--line2); }
+
+.lp-panel {
+  background: rgba(17,22,32,.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid var(--line);
+
+  border-radius: 16px;
+}
+
+.lp-up {
+  width: 100%;
+  max-width: 1200px;
+}
 
 /* buttons */
 .lp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;
-  font-size:13.5px;padding:10px 16px;border-radius:10px;cursor:pointer;border:1px solid transparent;
-  transition:all .16s;font-family:'Hanken Grotesk'}
+  font-size:13.5px; height:36px; padding:0 16px;border-radius:10px;cursor:pointer;border:1px solid transparent;
+  transition:all .16s;font-family:'Inter'}
 .lp-btn:disabled{opacity:.55;cursor:not-allowed}
-.lp-btn-primary{background:linear-gradient(180deg,var(--amber2),var(--amber));color:#1a0e02;
-  box-shadow:0 8px 24px -10px rgba(255,122,24,.7),inset 0 1px 0 rgba(255,255,255,.25)}
-.lp-btn-primary:not(:disabled):hover{filter:brightness(1.06);transform:translateY(-1px)}
-.lp-btn-ghost{background:var(--panel2);color:var(--txt);border-color:var(--line2)}
-.lp-btn-ghost:not(:disabled):hover{border-color:var(--muted2);background:var(--panel)}
-.lp-btn-sm{padding:6px 11px;font-size:12px;border-radius:8px}
+.lp-btn-primary {
+  background: var(--amber);
+  color: #150a00;
+  border-color: var(--amber2);
+  box-shadow: none;
+}
+.lp-btn-primary:not(:disabled):hover {
+  background: var(--amber2);
+  filter: none;
+  transform: none;
+}
+.lp-btn-ghost {
+  background: var(--panel2);
+  color: var(--txt);
+  border-color: var(--line2);
+}
+.lp-btn-ghost:not(:disabled):hover {
+  border-color: var(--line3);
+  background: var(--panel);
+}
 
 /* inputs */
-.lp-input,.lp-textarea{width:100%;background:var(--ink);border:1px solid var(--line2);border-radius:10px;
-  color:var(--txt);font-size:14px;padding:11px 13px;font-family:'Hanken Grotesk';transition:border-color .15s,box-shadow .15s}
+.lp-input, .lp-textarea {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  color: var(--txt);
+  font-size: 13.5px;
+  font-family: var(--font);
+  padding: 0 13px;
+  height: 36px;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+
+.lp-input:focus,
+.lp-textarea:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+}
+
+.lp-textarea {
+  height: auto;
+  min-height: 90px;
+  padding: 10px 13px;
+}
 .lp-input:focus,.lp-textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,122,24,.13)}
 .lp-textarea{resize:vertical;min-height:90px;line-height:1.55}
 .lp-label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
@@ -185,10 +312,34 @@ const STYLES = `
 .lp-pulse{animation:lpPulse 1.4s ease-in-out infinite}
 
 .lp-divider{height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent)}
-.lp-kpi-num{font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.03em;line-height:1}
+.lp-kpi-num{font-family:'Inter';font-weight:700;letter-spacing:-.4px;line-height:1}
 .lp-prose{line-height:1.65;font-size:14px;color:var(--txt2);white-space:pre-wrap}
 .lp-prose strong{color:var(--txt)}
 a.lp-link{color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--cyan-dim)}
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar: 200px;
+  }
+
+  main {
+    padding: 24px 20px 60px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .lp-side {
+    display: none;
+  }
+
+  main {
+    padding: 20px 16px 60px !important;
+  }
+
+  .lp-display {
+    font-size: 22px !important;
+  }
+}
 `;
 
 /* ============================================================
@@ -202,7 +353,7 @@ function Btn({ variant = "primary", size, children, className = "", ...p }) {
   );
 }
 function Panel({ children, className = "", style }) {
-  return <div className={`lp-panel lp-panel-glow ${className}`} style={style}>{children}</div>;
+  return <div className={`lp-panel ${className}`} style={style}>{children}</div>;
 }
 function Label({ children, style }) { return <label className="lp-label" style={style}>{children}</label>; }
 function Badge({ children, color = "var(--amber)" }) {
@@ -214,13 +365,64 @@ function Badge({ children, color = "var(--amber)" }) {
 }
 function SectionHead({ icon: Icon, kicker, title, sub }) {
   return (
-    <div className="lp-up" style={{ marginBottom: 22 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-        <Icon size={15} style={{ color: "var(--amber)" }} />
-        <span className="lp-mono" style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--muted)" }}>{kicker}</span>
+    <div style={{ marginBottom: 28 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginBottom: 5,
+        }}
+      >
+        <div
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "var(--amber)",
+            flexShrink: 0,
+          }}
+        />
+        <span
+          className="lp-mono"
+          style={{
+            fontSize: 10.5,
+            letterSpacing: ".14em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          {kicker}
+        </span>
       </div>
-      <h1 className="lp-display" style={{ fontSize: 30, fontWeight: 800, margin: 0 }}>{title}</h1>
-      {sub && <p style={{ color: "var(--muted)", marginTop: 7, fontSize: 14, maxWidth: 640 }}>{sub}</p>}
+
+      <h1
+        style={{
+          fontSize: 26,
+          fontWeight: 700,
+          letterSpacing: "-.4px",
+          lineHeight: 1.15,
+          margin: "0 0 6px",
+        }}
+      >
+        {title}
+      </h1>
+
+      {sub && (
+        <p
+  style={{
+    color: "var(--muted)",
+    fontSize: 13.5,
+    lineHeight: 1.6,
+    maxWidth: 580,
+    margin: "0 auto",
+    marginBottom: 0,
+    textAlign: "center",
+  }}
+>
+          {sub}
+        </p>
+      )}
     </div>
   );
 }
@@ -295,22 +497,51 @@ const NAV = [
    APP
    ============================================================ */
 export default function App() {
-  const [view, setView] = useState("setup");
+  const [view, setView] = useState(
+  localStorage.getItem("lp-view") || "setup"
+);
+
+  useEffect(() => {
+  localStorage.setItem("lp-view", view);
+}, [view]);
+  
   const [product, setProduct] = useState(null);
   const [artifacts, setArtifacts] = useState({}); // module outputs cache
+
+  const [projects, setProjects] = useState([]);
+  const [currentProjectId, setCurrentProjectId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [analytics, setAnalytics] = useState({
+  projectCount: 0,
+  generationCount: 0,
+  mostUsed: "-",
+  lastGenerated: "-",
+});
+
 
   useEffect(() => {
   loadWorkspace();
 }, []);
 
   const [usersAcquired, setUsersAcquired] = useState(0);
+
+  async function logout() {
+  await supabase.auth.signOut();
+  window.location.reload();
+}
+
   const [live, setLive] = useState({ url: "", status: "off", payload: null, syncedAt: null, error: "" });
+  const [user, setUser] = useState(null);
 
   async function loadWorkspace() {
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    setUser(user);
+    
 
     if (!user) return;
 
@@ -325,24 +556,34 @@ export default function App() {
       setProduct(products[0]);
     }
 
+    setProjects(products || []);
+
+    if (products?.length) {
+    setCurrentProjectId(products[0].id);
+    }
+
     const { data: gens } = await supabase
       .from("generations")
       .select("*")
       .eq("user_id", user.id);
 
     if (gens?.length) {
-      const restored = {};
+        const restored = {};
 
-      gens.forEach((g) => {
-        restored[g.type] = g.content;
-      });
+        gens.forEach((g) => {
+            restored[g.type] = g.content;
+        });
 
-      setArtifacts(restored);
-    }
+        setArtifacts(restored);
+        }
+        setLoading(false);
   } catch (err) {
     console.error("Workspace load failed:", err);
+
+    setLoading(false);
   }
 }
+
 
   useEffect(() => {
     const el = document.createElement("style");
@@ -353,23 +594,127 @@ export default function App() {
 
   const setArt = (key, val) => setArtifacts((a) => ({ ...a, [key]: val }));
 
-  const ctx = { product, setProduct, artifacts, setArt, usersAcquired, setUsersAcquired, setView, live, setLive };
+  const ctx = { product, setProduct, artifacts, setArt, usersAcquired, setUsersAcquired, setView, live, setLive, analytics };
   const locked = false;
 
+  if (loading) {
   return (
-    <div className="lp-root lp-grain" style={{ display: "flex", position: "relative", zIndex: 2 }}>
-      {/* SIDEBAR */}
-      <aside className="lp-side" style={{ width: 248, flexShrink: 0, height: "100vh", position: "sticky", top: 0, padding: "20px 14px", display: "flex", flexDirection: "column", overflowY: "auto" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "2px 8px 18px" }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(150deg,var(--amber2),var(--amber))", display: "grid", placeItems: "center", boxShadow: "0 6px 18px -6px rgba(255,122,24,.6)" }}>
-            <Rocket size={18} style={{ color: "#1a0e02" }} />
-          </div>
-          <div>
-            <div className="lp-display" style={{ fontWeight: 800, fontSize: 17, lineHeight: 1 }}>LaunchPilot</div>
-            <div className="lp-mono" style={{ fontSize: 9.5, color: "var(--muted)", letterSpacing: ".12em", marginTop: 3 }}>AI HEAD OF GROWTH</div>
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        background: "#080b10",
+        color: "#e6ecf5",
+      }}
+    >
+      <div
+  style={{
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  }}
+>
+  <div
+  style={{
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    background: "var(--amber)",
+    display: "grid",
+    placeItems: "center",
+    marginBottom: "18px",
+  }}
+>
+  <Rocket size={30} style={{ color: "#150a00" }} />
+</div>
+        <div
+          style={{
+            fontSize: "28px",
+            fontWeight: 700,
+            marginBottom: "8px",
+          }}
+        >
+          LaunchPilot
         </div>
 
+        <div
+          style={{
+            color: "#8fa0b8",
+            fontSize: "14px",
+          }}
+        >
+          Loading workspace...
+        </div>
+      </div>
+    </div>
+  );
+}
+
+  return (
+    <div
+      className="lp-root"
+      style={{
+        display: "flex",
+        position: "relative",
+        zIndex: 2,
+        minHeight: "100vh",
+        width: "100%",
+        overflow: "hidden"
+      }}
+    >
+      {/* SIDEBAR */}
+      <aside className="lp-side" style={{ padding: "0 10px 20px" }}>
+        <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    padding: "20px 16px 16px",
+    borderBottom: "1px solid var(--line)",
+  }}
+>
+  <div
+    style={{
+      width: 32,
+      height: 32,
+      borderRadius: 9,
+      background: "var(--amber)",
+      display: "grid",
+      placeItems: "center",
+      flexShrink: 0,
+    }}
+  >
+    <Rocket size={18} style={{ color: "#150a00" }} />
+  </div>
+
+  <div>
+    <div
+      style={{
+        fontSize: 18,
+        fontWeight: 700,
+        letterSpacing: "-.3px",
+        lineHeight: 1,
+      }}
+    >
+      LaunchPilot
+    </div>
+
+    <div
+      className="lp-mono"
+      style={{
+        fontSize: 10,
+        color: "var(--muted)",
+        letterSpacing: ".1em",
+        textTransform: "uppercase",
+        marginTop: 2,
+      }}
+    >
+      AI Head of Growth
+    </div>
+  </div>
+</div>
         {["Briefing", "Strategy", "Build", "Execute"].map((g) => (
           <div key={g} style={{ marginBottom: 10 }}>
             <div className="lp-mono" style={{ fontSize: 9.5, letterSpacing: ".14em", color: "var(--muted2)", padding: "8px 10px 6px" }}>{g.toUpperCase()}</div>
@@ -390,11 +735,79 @@ export default function App() {
 
         <div style={{ marginTop: "auto", paddingTop: 14 }}>
           <MissionMeter acquired={usersAcquired} />
+          {user && (
+  <div
+    style={{
+      marginTop: "12px",
+      marginBottom: "12px",
+      padding: "10px",
+      border: "1px solid var(--line)",
+      borderRadius: "10px",
+      fontSize: "13px",
+    }}
+  >
+    <div
+      style={{
+        fontWeight: 600,
+        marginBottom: "4px",
+      }}
+    >
+      Account
+    </div>
+        {user.user_metadata?.full_name && (
+      <div
+        style={{
+          fontWeight: 600,
+          marginBottom: "4px",
+          color: "var(--text)",
+        }}
+      >
+        {user.user_metadata.full_name}
+      </div>
+    )}
+
+
+    <div
+      style={{
+        color: "var(--muted)",
+        fontSize: "12px",
+        wordBreak: "break-word",
+      }}
+    >
+      {user.email}
+    </div>
+  </div>
+)}
+
+          <button
+            onClick={logout}
+            style={{
+              width: "100%",
+              marginTop: "12px",
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid var(--line)",
+              background: "transparent",
+              color: "var(--muted)",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 600,
+            }}
+          >
+            Logout
+          </button>
         </div>
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex: 1, height: "100vh", overflowY: "auto", padding: "30px 40px 80px", maxWidth: 1800 }}>
+      <main style={{
+          flex: 1,
+          minWidth: 0,
+          width: 0,        // ← add this line
+          height: "100vh",
+          overflowY: "auto",
+          padding: "32px 40px 80px",
+        }}>
         {view === "setup" && <SetupView {...ctx} />}
         {view === "dashboard" && (product ? <DashboardView {...ctx} /> : <NeedSetup setView={setView} />)}
         {view === "intel" && (product ? <IntelView {...ctx} /> : <NeedSetup setView={setView} />)}
@@ -429,7 +842,7 @@ function MissionMeter({ acquired }) {
 function NeedSetup({ setView }) {
   return (
     <div className="lp-up" style={{ display: "grid", placeItems: "center", minHeight: "60vh" }}>
-      <Panel style={{ padding: 40, textAlign: "center", maxWidth: 440 }}>
+      <Panel style={{ padding: 40, textAlign: "left", maxWidth: 440 }}>
         <Rocket size={28} style={{ color: "var(--amber)" }} />
         <h2 className="lp-display" style={{ fontSize: 22, fontWeight: 800, margin: "14px 0 8px" }}>Brief your mission first</h2>
         <p style={{ color: "var(--muted)", fontSize: 14, marginBottom: 20 }}>
@@ -444,14 +857,56 @@ function NeedSetup({ setView }) {
 /* ============================================================
    1 — MISSION SETUP
    ============================================================ */
-const SAMPLE = {
-  name: "Cassette",
-  url: "https://cassette.app",
-  description: "A voice-first journaling app with a vintage tape-deck interface. You hit record, talk for a few minutes, and Cassette transcribes, tags, and resurfaces your reflections over time. Built for people who think better out loud than on a keyboard.",
-  audience: "Busy knowledge workers and founders aged 25–45 who want a journaling habit but bounce off blank-page text apps. Privacy-conscious, design-sensitive, iOS-first.",
-  pricing: "Free tier (3 entries/week), Pro $7/mo unlimited + AI insights.",
-  stage: "Pre-launch beta. ~40 TestFlight users, no paying customers yet.",
-};
+const SAMPLES = [
+  {
+    name: "Cassette",
+    url: "https://cassette.app",
+    description: "A voice-first journaling app with a vintage tape-deck interface. You hit record, talk for a few minutes, and Cassette transcribes, tags, and resurfaces your reflections over time. Built for people who think better out loud than on a keyboard.",
+    audience: "Busy knowledge workers and founders aged 25–45 who want a journaling habit but bounce off blank-page text apps. Privacy-conscious, design-sensitive, iOS-first.",
+    pricing: "Free tier (3 entries/week), Pro $7/mo unlimited + AI insights.",
+    stage: "Pre-launch beta. ~40 TestFlight users, no paying customers yet.",
+  },
+  {
+    name: "StudyFlow",
+    url: "https://studyflow.app",
+    description: "An AI-powered study planner that turns syllabi, lecture notes, and deadlines into personalized study schedules.",
+    audience: "University students aged 18–25 struggling with time management and exam preparation.",
+    pricing: "Free tier + Pro $5/mo",
+    stage: "Early beta with 150 student users.",
+  },
+  {
+    name: "InternTrack",
+    url: "https://interntrack.app",
+    description: "A centralized internship tracking platform where students manage applications, interviews, resumes, and networking activities.",
+    audience: "College students actively applying for internships and placements.",
+    pricing: "Free + Premium $4/mo",
+    stage: "MVP with first 100 users.",
+  },
+  {
+    name: "FitForge",
+    url: "https://fitforge.app",
+    description: "AI-powered workout and nutrition planning tailored to body goals, lifestyle, and available equipment.",
+    audience: "Young professionals and fitness enthusiasts aged 20–35.",
+    pricing: "Freemium + Pro $9/mo",
+    stage: "Pre-launch waitlist of 500 users.",
+  },
+  {
+    name: "LaunchLens",
+    url: "https://launchlens.ai",
+    description: "AI market research platform that analyzes competitors, trends, and customer sentiment before product launches.",
+    audience: "Indie hackers, startup founders, and product managers.",
+    pricing: "Starter $19/mo",
+    stage: "Private beta.",
+  },
+  {
+    name: "Roomie",
+    url: "https://roomie.app",
+    description: "Roommate matching platform that uses lifestyle preferences, schedules, and personality traits to find compatible roommates.",
+    audience: "Students and young professionals moving to new cities.",
+    pricing: "Free + Verified Match $8 one-time fee",
+    stage: "Pilot in Bangalore.",
+  },
+];
 
 function SetupView({ product, setProduct, setView }) {
   const [f, setF] = useState(product || { name: "", url: "", description: "", audience: "", pricing: "", stage: "" });
@@ -473,8 +928,10 @@ function SetupView({ product, setProduct, setView }) {
         title="Mission Setup"
         sub="Give LaunchPilot the raw material. Everything downstream — strategy, content, video, the daily playbook — is built from this brief." />
 
-      <Panel style={{ padding: 28 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+        
+
+      <Panel style={{ padding: 40, maxWidth: "none" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(320px, 1fr))", gap: 18 }}>
           {fields.map(([k, lbl, type, ph]) => (
             <div key={k} style={{ gridColumn: type === "textarea" ? "1 / -1" : "auto" }}>
               <Label>{lbl}</Label>
@@ -495,26 +952,55 @@ function SetupView({ product, setProduct, setView }) {
                 } = await supabase.auth.getUser();
 
                 if (user) {
-                await supabase.from("products").insert([
-                    {
-                    user_id: user.id,
-                    name: f.name,
-                    url: f.url,
-                    description: f.description,
-                    audience: f.audience,
-                    pricing: f.pricing,
-                    stage: f.stage,
-                    },
-                ]);
-                }
+                const { data: existing } = await supabase
+                    .from("products")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .eq("name", f.name)
+                    .limit(1);
+
+                    if (existing?.length) {
+                    await supabase
+                        .from("products")
+                        .update({
+                        url: f.url,
+                        description: f.description,
+                        audience: f.audience,
+                        pricing: f.pricing,
+                        stage: f.stage,
+                        })
+                        .eq("id", existing[0].id);
+                    } else {
+                    await supabase.from("products").insert([
+                        {
+                        user_id: user.id,
+                        name: f.name,
+                        url: f.url,
+                        description: f.description,
+                        audience: f.audience,
+                        pricing: f.pricing,
+                        stage: f.stage,
+                        },
+                    ]);
+                    }
 
                 setProduct(f);
                 setView("intel");
             }}
+        }
             >
             <Rocket size={15} /> Launch mission
           </Btn>
-          <Btn variant="ghost" onClick={() => setF(SAMPLE)}><Sparkles size={14} /> Load sample product</Btn>
+          <Btn
+            variant="ghost"
+            onClick={() => {
+                const random =
+                SAMPLES[Math.floor(Math.random() * SAMPLES.length)];
+                setF(random);
+            }}
+            >
+            <Sparkles size={14} /> Load sample product
+            </Btn>
           {!ready && <span style={{ fontSize: 12.5, color: "var(--muted2)" }}>Name, description & audience required.</span>}
         </div>
       </Panel>
@@ -1484,6 +1970,7 @@ function LiveBar({ live, setLive }) {
 const FUNNEL_COLORS = ["var(--muted)", "var(--cyan)", "var(--amber)", "var(--green)", "var(--violet)"];
 
 function DashboardView(ctx) {
+    const { analytics } = ctx;
   const { product, usersAcquired, live, setLive } = ctx;
   const seeded = useMemo(() => seedSeries(product.name || "x"), [product.name]);
   const seededSources = useMemo(() => SOURCES(product.name), [product.name]);
@@ -1515,6 +2002,43 @@ function DashboardView(ctx) {
         sub="Your acquisition cockpit. Funnels, sources and retention in one view. Connect the PostHog proxy for live numbers; otherwise it runs on sample data." />
 
       <LiveBar live={live} setLive={setLive} />
+
+      <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(4,1fr)",
+    gap: 12,
+    marginBottom: 16,
+  }}
+>
+  <Kpi
+    icon={Rocket}
+    label="Projects"
+    value={analytics.projectCount}
+    accent="var(--amber)"
+  />
+
+  <Kpi
+    icon={FileText}
+    label="Generations"
+    value={analytics.generationCount}
+    accent="var(--cyan)"
+  />
+
+  <Kpi
+    icon={Sparkles}
+    label="Most Used"
+    value={analytics.mostUsed}
+    accent="var(--green)"
+  />
+
+  <Kpi
+    icon={TrendingUp}
+    label="Last Generated"
+    value={analytics.lastGenerated}
+    accent="var(--violet)"
+  />
+</div>
 
       {/* KPI row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 12, marginBottom: 16 }}>

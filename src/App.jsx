@@ -6,6 +6,7 @@ import LaunchPilot from "./LaunchPilot";
 function App() {
   const [session, setSession] = useState(null);
 
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
