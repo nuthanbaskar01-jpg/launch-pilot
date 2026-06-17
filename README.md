@@ -98,7 +98,8 @@ LaunchPilot is an AI-powered go-to-market copilot that helps founders transform 
 ## 📸 Screenshots
 
 ### Login & Authentication
-?????????????????????????????????????
+<img width="932" height="449" alt="image" src="https://github.com/user-attachments/assets/2821ae06-322a-4c7b-8063-fa93aed5c057" />
+
 
 ### Mission Setup
 <img width="960" height="502" alt="image" src="https://github.com/user-attachments/assets/e45cebda-99bd-47af-8977-ccd260037899" />
