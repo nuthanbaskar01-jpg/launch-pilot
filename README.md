@@ -1,10 +1,8 @@
 # 🚀 LaunchPilot
 
-AI-powered go-to-market platform that helps founders validate ideas, identify target audiences, generate messaging, create content strategies, and plan growth experiments.
+LaunchPilot is an AI-powered go-to-market copilot that helps founders transform a product idea into a complete launch strategy through customer research, positioning, messaging, content creation, and growth planning.
 
-## 🌐 Live Demo
-
-**URL:** _https://launch-pilot1.vercel.app/_
+### **🌐 Live Demo** _https://launch-pilot1.vercel.app/_
 
 ## ✨ Features
 
@@ -50,6 +48,21 @@ AI-powered go-to-market platform that helps founders validate ideas, identify ta
 * Generation history
 * Workspace restoration
 
+### Authentication
+
+* Google OAuth Login
+* Email & Password Authentication
+* Persistent User Sessions
+* Secure Workspace Access
+
+### GTM Dashboard
+
+* Project Tracking
+* Generation Analytics
+* Most Used Module Tracking
+* Last Generated Asset Tracking
+* Growth Funnel Visualization
+  
 ---
 
 ## 🛠 Tech Stack
@@ -99,9 +112,21 @@ AI-powered go-to-market platform that helps founders validate ideas, identify ta
 
 ## 🏗 Architecture
 
-User → React Frontend → Vercel API → Groq AI
-
-User → React Frontend → Supabase Auth → Supabase Database
+User
+ ↓
+React + Vite Frontend
+ ↓
+Supabase Authentication
+ ↓
+LaunchPilot Workspace
+ ↓
+Vercel Serverless API
+ ↓
+Groq Llama 3.3 70B
+ ↓
+Generated GTM Assets
+ ↓
+Supabase Storage & Analytics
 
 ---
 
@@ -110,7 +135,7 @@ User → React Frontend → Supabase Auth → Supabase Database
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/launch-pilot.git
+git clone https://github.com/nuthanbaskar01-jpg/launch-pilot.git
 cd launch-pilot
 ```
 
