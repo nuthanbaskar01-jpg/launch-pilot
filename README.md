@@ -11,7 +11,7 @@ AI-powered go-to-market platform that helps founders validate ideas, identify ta
 ### Product Intelligence
 
 * Analyze product positioning
-* Identify customer pain points
+* Identify customer pain points  
 * Discover competitive advantages
 * Generate strategic insights
 
