@@ -2,7 +2,9 @@
 
 LaunchPilot is an AI-powered go-to-market copilot that helps founders transform a product idea into a complete launch strategy through customer research, positioning, messaging, content creation, and growth planning.
 
-### **🌐 Live Demo** _https://launch-pilot1.vercel.app/_
+## 🌐 Live Demo
+
+**LaunchPilot:** _https://launch-pilot1.vercel.app_
 
 ## ✨ Features
 
@@ -95,17 +97,20 @@ LaunchPilot is an AI-powered go-to-market copilot that helps founders transform 
 
 ## 📸 Screenshots
 
-### Dashboard
-*************************
+### Login & Authentication
+?????????????????????????????????????
+
+### Mission Setup
+<img width="960" height="502" alt="image" src="https://github.com/user-attachments/assets/e45cebda-99bd-47af-8977-ccd260037899" />
+
 
 ### Product Intelligence
-*************************
+<img width="960" height="503" alt="image" src="https://github.com/user-attachments/assets/8a4b8ab5-24aa-4928-adbc-6057bb56ed5a" />
 
-### Audience Discovery
-*************************
 
-### Content Engine
-*************************
+### GTM Dashboard
+<img width="960" height="501" alt="image" src="https://github.com/user-attachments/assets/3a404be0-8822-43e0-b285-161d8a88602e" />
+
 
 
 ---
