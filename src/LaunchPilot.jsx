@@ -619,7 +619,19 @@ export default function App() {
 
   const setArt = (key, val) => setArtifacts((a) => ({ ...a, [key]: val }));
 
-  const ctx = { product, setProduct, artifacts, setArt, usersAcquired, setUsersAcquired, setView, live, setLive, analytics };
+const ctx = {
+      product,
+      setProduct,
+      artifacts,
+      setArt,
+      usersAcquired,
+      setUsersAcquired,
+      setView,
+      live,
+      setLive,
+      analytics,
+      setAnalytics,
+    };
   const locked = false;
 
   if (loading) {
@@ -1068,7 +1080,13 @@ function SetupView({ product, setProduct, setView }) {
    Generic generative module hook
    ============================================================ */
 function useGen(key, ctx, runner) {
-  const { artifacts, setArt, product } = ctx;
+  const {
+      artifacts,
+      setArt,
+      product,
+      analytics,
+      setAnalytics,
+    } = ctx;
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const data = artifacts[key];
@@ -1095,6 +1113,11 @@ function useGen(key, ctx, runner) {
           },
         ]);
       }
+      setAnalytics((prev) => ({
+      ...prev,
+      generationCount: prev.generationCount + 1,
+      lastGenerated: key,
+    }));
     } catch (e) {
       setErr("Generation failed — " + (e.message || "try again."));
     } finally {
